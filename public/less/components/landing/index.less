@@ -1,0 +1,273 @@
+.landing__hero {
+  width: 50%;
+  margin: 0 auto;
+  text-align: center;
+  margin-top: 20px;
+
+  @media (max-width: @screen-sm-min) {
+    width: 100%;
+  }
+
+  a:last-of-type {
+    margin-top: 20px;
+  }
+}
+.landing__hero .landing__button {
+  margin-top: 40px;
+}
+.landing__hero .logo {
+  .backgroundImage('../../img/landing/logo/logos_mayk_logo@2x.png');
+  height: 280px;
+
+  @media (max-width: @screen-sm-min) {
+  }
+}
+.landing__hero .tagline__primary {
+  font-weight: @fontWeight-5;
+  margin-top: 30px;
+  font-size: 30px;
+  color: @mayk-primary;
+
+  @media (max-width: @screen-sm-min) {
+    font-size: 19px;
+  }
+}
+.landing__hero .tagline__secondary {
+  font-size: 21px;
+
+  @media (max-width: @screen-sm-min) {
+    font-size: 17px;
+    margin-top: 12px
+  }
+}
+.landing__hero .login-button {
+  width: 180px;
+  margin: 20px auto;
+}
+
+.github__transform {
+  width: 45%;
+  height: 512px;
+  margin: 0 auto;
+  text-align: center;
+}
+// Extract?
+.title__medium {
+  font-size: 22px;
+  font-weight: @fontWeight-5;
+}
+
+.title__large {
+  font-size: 28px;
+  font-weight: @fontWeight-5;
+}
+
+.github__transform .github__public {
+  margin: 0 auto;
+  text-align: center;
+  height: 203px;
+}
+.github__transform .github__public .commit-graph {
+  .backgroundImage('../../img/landing/githubTransform/publicCommitGraph/PublicCommits@3x.png');
+  width: 82%;
+  height: 158px;
+  margin: 0 auto;
+}
+
+.github__transform .github__private {
+  margin: 0 auto;
+  text-align: center;
+  height: 233px;
+}
+.github__transform .github__private .commit-graph {
+  .backgroundImage('../../img/landing/githubTransform/privateCommitGraph/PrivateCommits@3x.png');
+  width: 100%;
+  height: 190px;
+}
+
+.personal__profile {
+  width: 70%;
+  display: inline-block;
+  float: left;
+
+  @media (max-width: @screen-sm-min) {
+    /* .backgroundImage('') */;
+    width: 100%;
+  }
+}
+
+.personal__profile .body {
+  /* .backgroundImage('') */
+}
+.languages-bar-chart {
+  .backgroundImage('../../img/landing/languagesBarChart/languagesBarChart@3x.png');
+  width: 30%;
+  height: 325px;
+  display: inline-block;
+
+  @media (max-width: @screen-sm-min) {
+    width: 100%;
+    height: 246px;
+  }
+}
+.github__searchbar {
+  /* .backgroundImage('') */;
+  width: 53%;
+  height: 102px;
+  margin: 40px auto 0px;
+
+  @media (max-width: @screen-sm-min) {
+    /* .backgroundImage('') */;
+    width: 100%;
+    height: 125px;
+  }
+}
+.small-action-info,
+.large-action-info {
+  margin: 10px 0;
+  text-align: center;
+}
+.small-action-info {
+  font-size: 20px;
+}
+.large-action-info {
+  font-size: 26px;
+}
+.connection-bar {
+  height: 40px;
+  width: 2px;
+  background: @mayk-primary;
+  margin: 0 auto;
+}
+.github__formatted-message {
+  /* .backgroundImage('') */;
+  margin: 0 auto;
+  width: 47%;
+  height: 188px;
+
+  @media (max-width: @screen-sm-min) {
+    /* .backgroundImage('') */;
+    width: 100%;
+    height: 200px;
+    margin-top: 10px;
+  }
+}
+.mayk__item-card {
+  /* .backgroundImage('') */;
+  margin: 10px auto 50px;
+  width: 32%;
+  height: 142px;
+
+  @media (max-width: @screen-sm-min) {
+    width: 100%;
+    height: 125px;
+  }
+}
+.round-target {
+  /* .backgroundImage('') */;
+  margin: 0 auto;
+  width: 20px;
+  height: 20px;
+}
+.mayk__action-table {
+  /* .backgroundImage('') */;
+  margin: 30px auto 0;
+  width: 85%;
+  height: 224px;
+
+  @media (max-width: @screen-sm-min) {
+    /* .backgroundImage('') */;
+    width: 100%;
+    height: 235px;
+  }
+}
+.landing__section {
+  margin: 5px auto;
+  width: 100%;
+}
+.landing__section .sep {
+  border-bottom: 1px solid black;
+}
+.landing__section .header {
+  font-weight: @fontWeight-5;
+  font-size: 32px;
+
+  @media (max-width: @screen-sm-min) {
+    font-size: 24px
+  }
+}
+.landing__section .body {
+  p:first-of-type {
+    margin-top: 10px;
+  }
+  p {
+    margin-bottom: 0px;
+    font-size: 22px;
+
+    @media (max-width: @screen-sm-min) {
+      font-size: 16px;
+    }
+  }
+  span.action__blue {
+    font-weight: @fontWeight-5;
+    color: @mayk-primary;
+  }
+}
+.landing__section.footer {
+  padding: 25px 0;
+}
+
+// Compose to assets stylesheet
+.logos__mayk-labs {
+  /* .backgroundImage('') */;
+  width: 15%;
+  height: 30px;
+  margin: 0 auto;
+
+  @media (max-width: @screen-sm-min) {
+    width: 50%;
+  }
+}
+.login__prompt {
+  padding: 75px 0;
+  margin: 0 auto;
+  width: 230px;
+
+  @media (max-width: @screen-sm-min) {
+    padding: 45px 0 25px;
+    width: 200px;
+  }
+
+  a:last-of-type {
+    margin-top: 20px;
+  }
+}
+.login__prompt .prompt {
+  text-align: center;
+  font-size: 32px;
+  padding-bottom: 20px;
+
+  @media (max-width: @screen-sm-min) {
+    font-size: 25px;
+    padding-bottom: 10px;
+  }
+}
+.landing__button {
+  width: 200px;
+  margin: 0 auto;
+
+  a {
+    font-weight: @fontWeight-5;
+    border-radius: 7px;
+    height: 45px;
+    line-height: 35px;
+    font-size: 15px;
+    border-radius: 7px;
+  }
+}
+.emoji__sparkling_heart {
+  /* .backgroundImage('') */;
+  width: 35px;
+  height: 35px;
+  float: right;
+}
