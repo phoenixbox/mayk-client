@@ -1,0 +1,10 @@
+node_modules
+.tmp
+.env
+.DS_Store
+.wercker
+deploy
+public/js/build/*.js
+public/js/build/*.js.map
+public/css/main.css*
+npm-debug.log*

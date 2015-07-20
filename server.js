@@ -21,25 +21,94 @@ server.views({
   }
 });
 
-server.route([
+var plugins = [
   {
-    method: 'GET',
-    path: '/',
-    handler: function (request, reply) {
-      reply.view('home.html');
+    register: require('good'),
+    options: {
+      opsInterval: 1000,
+      reporters: [
+        {
+          reporter: require('good-console'),
+          args: [{ log: '*', response: '*', error: '*' }]
+        }
+      ]
     }
   },
-  {
+  require('./lib/api/user'),
+  require('./lib/oauth')
+]
+
+server.register(plugins
+  , function(err) {
+  if (err) {
+    throw err;
+  }
+
+  server.route([
+    {
       method: 'GET',
-      path: '/{p*}',
-      handler: {
-        directory: {
-          path: 'public'
+      path: '/',
+      handler: function (request, reply) {
+        var viewVars = internals.viewVars('', request);
+
+        reply.view('home.html', viewVars);
+      }
+    },
+    {
+      method: 'GET',
+      path: '/profile',
+      config: {
+        auth: 'session'
+      },
+      handler: function (request, reply) {
+        var viewVars = internals.viewVars('profile', request);
+        console.log('VIEW VARS: ', viewVars);
+
+        reply.view('profile.html', viewVars);
+      }
+    },
+    {
+        method: 'GET',
+        path: '/{p*}',
+        handler: {
+          directory: {
+            path: 'public'
+          }
         }
       }
-    }
-]);
+  ]);
 
-server.start(function () {
+  server.start(function () {
     console.log('Server running at:', server.info.uri);
+  })
 })
+
+module.exports.server = server;
+
+
+var internals = {
+  viewVars: function(pathname, request) {
+    var path = '/' + pathname;
+    var token = request.auth.credentials ? request.auth.credentials.token : false;
+    var authAttrs = request.auth.credentials ? internals.pluckAuthAttrs(request.auth.credentials.profile) : {};
+
+    return _.extend({
+      pathname: path,
+      token: token
+    }, authAttrs)
+  },
+
+  pluckAuthAttrs: function(profile) {
+    var authAttrs = ['email', 'username', 'displayName', 'access_token', 'uuid', 'token_type', 'user_id', 'token'];
+
+    return _.reduce(profile, function(memo, val, key) {
+      if (_.contains(authAttrs, key)) {
+        memo[key] = val;
+      }
+
+      return memo;
+    }, {});
+  }
+}
+
+module.exports.internals = internals;

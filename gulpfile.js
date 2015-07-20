@@ -1,59 +1,126 @@
-var gulp = require('gulp');
-var livereload = require('gulp-livereload');
-var nodemon = require('gulp-nodemon');
-var less = require('gulp-less');
-var exec = require('child_process').exec;
-var sourcemaps = require('gulp-sourcemaps');
-var csso = require('gulp-csso');
-var rename = require('gulp-rename');
+var _             = require('lodash');
+var config        = {
+  "browserify": {
+    "path": "./app",
+    "src": "./app/index.js",
+    "build": "./public/js/build",
+    "dist": "./public/js/dist"
+  }
+}
+var gutil    = require('gulp-util');
+var notifier = require('node-notifier');
 
-gulp.task('less', function() {
-  gulp.src('public/less/main.less')
-    .pipe(sourcemaps.init())
-    .pipe(less())
-    .pipe(sourcemaps.write('.'))
-    .pipe(gulp.dest('public/css'));
+var errorsHandler = {
+  browserifyErrorHandler: function (err) {
+    notifier.notify({ message: 'Error: ' + err.message });
+    gutil.log(gutil.colors.red('Error'), err.message);
+    this.emit('end');
+  }
+};
+
+var del           = require('del');
+var gulp          = require('gulp');
+var gutil         = require('gulp-util');
+var plumber       = require('gulp-plumber');
+var transform     = require('vinyl-transform');
+var browserify    = require('browserify');
+var watchify      = require('watchify');
+var babelify      = require('babelify');
+var envify        = require('envify/custom');
+var shimify       = require('browserify-shim');
+var uglify        = require('gulp-uglify');
+var minimist      = require('minimist');
+var exorcist      = require('exorcist');
+var transform     = require('vinyl-transform');
+var map           = require('map-stream');
+var path          = require('path');
+var rename        = require("gulp-rename");
+var concat        = require('gulp-concat');
+var ignore        = require('gulp-ignore');
+
+// clean task
+gulp.task('javascript:clean', function () {
+  del([config.browserify.build], function (err, paths) {
+    gutil.log(
+      'Deleted files/folders:\n',
+      gutil.colors.cyan(paths.join('\n'))
+    );
+  });
 });
 
-gulp.task('cssmin', function() {
-  gulp.src('public/css/main.css')
-    .pipe(csso())
-    .pipe(rename({
-      suffix: '.min'
-    }))
-    .pipe(gulp.dest('public/css'));
-});
-
-gulp.task('watch', function() {
-  livereload.listen()
-
-  var child = exec('npm run watch');
-  child.stdout.pipe(process.stdout);
-  child.stderr.pipe(process.stderr);
-  process.on('exit', function(code) {
-    if (child.exit) { child.exit(code); }
-  });
-  child.on('exit', function(code) {
-    process.exit(code);
-  });
-
-  nodemon({
-    script: 'server.js',
-    ext: 'js less html',
-    stdout: false
-  }).on('readable', function() {
-    this.stdout.on('data', function(chunk) {
-      if (/^listening/.test(chunk)) {
-        console.log('RELOADING')
-        livereload.reload()
+// watch task
+gulp.task('default', function () {
+  var bundle;
+  var bundler;
+  var cached = {};
+  var argv = minimist(process.argv.slice(2));
+  var source = argv.only ? config.browserify.path + argv.only : config.browserify.src;
+  bundler = function() {
+    return transform(function(filename) {
+      if (cached[filename]) {
+        return cached[filename].bundle();
       }
-      process.stdout.write(chunk)
-    })
-  })
+      var b = watchify(browserify(filename, _.extend({debug: true}, watchify.args)));
 
-  gulp.watch('public/less/**/*.less', ['less']);
+      b.on('time', function(time) {
+        gutil.log(gutil.colors.green('Bundle'), filename + gutil.colors.magenta(' in ' + time + 'ms'));
+      });
+      b.on('error', errorsHandler.browserifyErrorHandler);
+      b.on('update', bundle(filename));
+      b.transform(babelify);
+      b.transform(shimify);
+      b.transform(envify({
+        NODE_ENV: 'development'
+      }), { global: true });
+
+      cached[filename] = b;
+
+      return b.bundle();
+    });
+  };
+
+  bundle = function(filename){
+    return function() {
+      var stream = gulp.src([filename])
+                      .pipe(plumber({ errorHandler: errorsHandler.browserifyErrorHandler }))
+                      .pipe(bundler())
+                      .pipe(
+                        transform(function() {
+                          return exorcist(path.join(config.browserify.build, 'mayk' + '.map'));
+                       })
+                      )
+                      .pipe(gulp.dest(config.browserify.build))
+      return stream;
+    };
+  };
+
+  return bundle(source)();
 });
 
-gulp.task('css', ['less', 'cssmin']);
+gulp.task('javascript:prod', ['javascript:clean'], function() {
+  browserifyProd = function() {
+    return transform(function(filename) {
+      var b = browserify(filename);
+      b.transform(babelify);
+      b.transform(shimify);
+      b.transform(envify({
+        NODE_ENV: 'production'
+      }), { global: true });
 
-gulp.task('default', ['less', 'watch']);
+      return b.bundle();
+    });
+  };
+
+  bundle = function(filename){
+    return function() {
+      var stream = gulp.src([filename])
+                  .pipe(browserifyProd())
+                  .pipe(concat('mayk.min.js'))
+                  .pipe(ignore.exclude([ "**/*.map" ]))
+                  .pipe(uglify().on('error', gutil.log))
+                  .pipe(gulp.dest(config.browserify.dist))
+    };
+  };
+
+  return bundle('./app/frontend/javascripts/**/*.js')()
+});
