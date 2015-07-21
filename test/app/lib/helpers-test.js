@@ -1,5 +1,5 @@
 var assert = require('chai').assert;
-var helpers = require('../../lib/helpers.js');
+var helpers = require('../../../lib/helpers.js');
 
 describe('#helpers', function () {
   describe('#rootURL', function () {
