@@ -10,10 +10,8 @@ var routes = (
   </Route>
 );
 
-module.exports = function(user) {
+module.exports = function() {
   Router.run(routes, Router.HistoryLocation, function(Handler, state) {
     React.render(<Handler />, document.getElementById('mayk__app'));
   });
 };
-
-// RESTART: Use the access_token in the view to log the user in from the session store app
