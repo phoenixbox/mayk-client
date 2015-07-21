@@ -1,18 +1,18 @@
-import AppDispatcher from '../dispatchers/AppDispatcher';
-import AppConstants from '../constants/AppConstants';
+var AppDispatcher = require('../dispatchers/AppDispatcher');
+var AppConstants = require('../constants/AppConstants');
+import _ from 'lodash';
 
 var EventEmitter = require('events').EventEmitter;
 var assign = require('object-assign');
 
-var ActionTypes = AppConstants.ActionTypes;
+var SessionConstants = require('../constants/SessionConstants.js');
 var CHANGE_EVENT = 'change';
 
 // Load an access token from the session storage, you might want to implement
 // a 'remember me' using localSgorage
 // TODO: Where does sessionStorage come from?
-var _accessToken = sessionStorage.getItem('accessToken')
-var _oauthToken = sessionStorage.getItem('oauthToken')
-var _email = sessionStorage.getItem('email')
+var _user = {};
+var _github = {};
 var _errors = [];
 
 var SessionStore = assign({}, EventEmitter.prototype, {
@@ -47,19 +47,19 @@ var SessionStore = assign({}, EventEmitter.prototype, {
 
 });
 
-SessionStore.dispatchToken = AppDispatcher.register(function(payload) {
-  var action = payload.action;
+SessionStore.dispatchToken = AppDispatcher.register(function(action) {
   // Store the token sent back in from the hapi redirect to the profile
-  switch(action.type) {
+  switch(action.actionType) {
 
-    case ActionTypes.LOGIN_RESPONSE:
-      if (action.json && action.json.access_token && action.json.oauth_token) {
-        _accessToken = action.json.access_token;
-        _oauthToken = action.json.oauth_token;
-        _email = action.json.email;
-        // Token will always live in the session, so that the API can grab it with no hassle
-        sessionStorage.setItem('accessToken', _accessToken);
-        sessionStorage.setItem('email', _email);
+    case SessionConstants.LOGIN:
+      // extract the whole github profile from the `payload`
+      debugger
+      var user = internals.extractUser(action.payload)
+      var github = internals.extractGithub(action.payload)
+
+      if (internals.isValid(user) && internals.isValid(github)) {
+        _user = user;
+        _github = github;
       }
       if (action.errors) {
         _errors = action.errors;
@@ -67,7 +67,7 @@ SessionStore.dispatchToken = AppDispatcher.register(function(payload) {
       SessionStore.emitChange();
       break;
 
-    case ActionTypes.LOGOUT:
+    case SessionConstants.LOGOUT:
       _accessToken = null;
       _email = null;
       sessionStorage.removeItem('accessToken');
@@ -75,10 +75,49 @@ SessionStore.dispatchToken = AppDispatcher.register(function(payload) {
       SessionStore.emitChange();
       break;
 
+    case SessionConstants.SESSION_ERROR:
+      console.log('HANDLE THE SESSION ERROR');
+
     default:
   }
 
   return true;
 });
 
+var internals = {
+  extractUser: function(payload) {
+    var userAttrs = ['access_token', 'uuid', 'token_type', 'user_id'];
+    return internals.extract(userAttrs, payload);
+  },
+
+  isValid: function(object) {
+    var result = true;
+
+    for (var key in object) {
+      if (object[key] == false) {
+        result = false;
+        break;
+      }
+    }
+
+    return result;
+  },
+
+  extractGithub: function(payload) {
+    var githubAttrs = ['github_username', 'github_email', 'github_display_name', 'github_oauth_token'];
+    return internals.extract(githubAttrs, payload);
+  },
+
+  extract: function(attrs, payload) {
+    return _.reduce(payload, function(memo, val, key) {
+      if(_.contains(attrs, key)) {
+        memo[key] = val;
+      }
+
+      return memo;
+    }, {});
+  }
+}
+
 module.exports = SessionStore;
+module.exports.internals = internals;
