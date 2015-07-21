@@ -63,9 +63,10 @@
 
     </script>
     {% endif %}
-    {% if pathname === '/profile' && token %}
+    {% if pathname === '/profile' && access_token && uuid %}
       <script>
-        var __token = '{{token}}'
+        var __access_token = '{{access_token}}'
+        var __uuid = '{{uuid}}'
       </script>
 
       {% if process.env.NODE_ENV === 'production' %}

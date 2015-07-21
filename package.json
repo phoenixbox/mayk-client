@@ -27,6 +27,7 @@
     "swig": "^1.4.2"
   },
   "devDependencies": {
+    "babel": "^5.6.23",
     "babelify": "^6.0.2",
     "bootstrap": "^3.3.4",
     "browser-sync": "^2.7.6",
@@ -79,7 +80,7 @@
   },
   "scripts": {
     "gulp": "NODE_ENV=development gulp",
-    "test": "NODE_ENV=test mocha test --recursive",
+    "test": "mocha --watch --compilers js:compiler.js --recursive",
     "build": "browserify -r --extension=.js --extension=.jsx ./app -d | ./node_modules/.bin/exorcist public/js/build/mayk.js.map > public/js/build/mayk.js",
     "watch": "watchify -r --extension=.js --extension=.jsx ./app -o './node_modules/.bin/exorcist public/js/mayk.js.map > public/js/mayk.js' -d -v",
     "less": "lessc ./public/less/main.less ./public/css/main.css",

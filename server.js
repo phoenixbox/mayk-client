@@ -89,17 +89,15 @@ module.exports.server = server;
 var internals = {
   viewVars: function(pathname, request) {
     var path = '/' + pathname;
-    var token = request.auth.credentials ? request.auth.credentials.token : false;
     var authAttrs = request.auth.credentials ? internals.pluckAuthAttrs(request.auth.credentials.profile) : {};
 
     return _.extend({
-      pathname: path,
-      token: token
+      pathname: path
     }, authAttrs)
   },
 
   pluckAuthAttrs: function(profile) {
-    var authAttrs = ['email', 'username', 'displayName', 'access_token', 'uuid', 'token_type', 'user_id', 'token'];
+    var authAttrs = ['access_token', 'uuid'];
 
     return _.reduce(profile, function(memo, val, key) {
       if (_.contains(authAttrs, key)) {

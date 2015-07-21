@@ -1,10 +1,10 @@
 import React from "react";
 import { RouteHandler } from "react-router";
 import SessionStore from '../stores/SessionStore.js';
+import SessionActions from '../actions/SessionActions.js';
 
 function getStateFromStores() {
-  // Gravatar information?
-  // Name information
+  // Should have the requisite github profile info
   return {
     isLoggedIn: SessionStore.isLoggedIn,
     email: SessionStore.getEmail()
@@ -17,15 +17,12 @@ export default React.createClass({
   },
 
   componentDidMount() {
-    SessionStore.addChangeListener(this._onChange)
+  SessionStore.addChangeListener(this._onChange)
+    SessionActions.init();
   },
 
   componentWillUnmount() {
     SessionStore.removeChangeListener(this._onChange)
-  },
-
-  _onChange() {
-    this.setState(getStateFromStores());
   },
 
   render: function() {
@@ -33,5 +30,9 @@ export default React.createClass({
     return (
       <RouteHandler {...this.props} />
     )
+  },
+
+  _onChange() {
+    this.setState(getStateFromStores());
   }
 });
