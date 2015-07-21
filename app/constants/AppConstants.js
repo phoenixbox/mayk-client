@@ -17,6 +17,7 @@ module.exports = {
 
   ActionTypes: keyMirror({
     // Session
+    INIT: null,
     LOGIN_REQUEST: null,
     LOGIN_RESPONSE: null,
 
