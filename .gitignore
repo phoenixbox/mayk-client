@@ -4,7 +4,7 @@ node_modules
 .DS_Store
 .wercker
 deploy
-public/js/build/*.js
-public/js/build/*.js.map
+public/js/mayk.js
+public/js/mayk.js.map
 public/css/main.css*
 npm-debug.log*

@@ -79,20 +79,24 @@
     "websocket": "^1.0.18"
   },
   "scripts": {
-    "gulp": "NODE_ENV=development gulp",
-    "test": "mocha --watch --compilers js:compiler.js --recursive",
-    "build": "browserify -r --extension=.js --extension=.jsx ./app -d | ./node_modules/.bin/exorcist public/js/build/mayk.js.map > public/js/build/mayk.js",
-    "watch": "watchify -r --extension=.js --extension=.jsx ./app -o './node_modules/.bin/exorcist public/js/mayk.js.map > public/js/mayk.js' -d -v",
-    "less": "lessc ./public/less/main.less ./public/css/main.css",
+    "dev": "gulp dev",
+    "build": "browserify app -d | exorcist -b './app' public/js/mayk.js.map > public/js/mayk.js",
+    "build-less": "gulp less",
     "build-production": "npm run build-production-js && npm run build-production-css",
-    "build-production-js": "NODE_ENV=production browserify -r --extension=.js --extension=.jsx ./app | uglifyjs -cm > public/js/mayk.min.js",
-    "build-production-css": "npm run less && ./node_modules/.bin/csso public/css/main.css public/css/main.min.css",
-    "build-less": "gulp less"
+    "build-production-css": "gulp css",
+    "build-production-js": "NODE_ENV=production browserify app | uglifyjs -cm > public/js/mayk.min.js",
+    "build-test": "NODE_ENV=test browserify test/index.js -t rewireify -t babelify -t envify -d | exorcist -b './app' test/test-bundle.js.map > test/test-bundle.js",
+    "start": "node server.js",
+    "test": "mocha --watch --compilers js:compiler.js --recursive",
+    "watch-test": "NODE_ENV=test ./node_modules/karma/bin/karma start",
+    "watchify": "watchify app -d -v -o 'exorcist -b './app' public/js/mayk.js.map > public/js/mayk.js'",
+    "watchify-test": "NODE_ENV=test watchify test/index.js -o 'exorcist -b './app' test/test-bundle.js.map > test/test-bundle.js' -t rewireify -t babelify -t envify -dv"
   },
   "browserify-shim": {},
   "browserify": {
     "transform": [
-      "babelify"
+      "babelify",
+      "envify"
     ]
   },
   "keywords": [
