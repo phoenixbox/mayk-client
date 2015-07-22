@@ -4,9 +4,7 @@ var SessionConstants = require('../constants/SessionConstants.js')
 
 module.exports = {
   init: function() {
-    debugger
-    // want the window vars of uuid && accessToken
-    SessionAPI.login(uuid, accessToken).then(function(error, res) {
+    SessionAPI.login(__uuid, __access_token).then(function(error, res) {
       if (res) {
         if (res.error) {
           var errorMsgs = _getErrors(res);

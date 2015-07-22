@@ -1,6 +1,6 @@
 var AppDispatcher = require('../dispatchers/AppDispatcher');
 var AppConstants = require('../constants/AppConstants');
-import _ from 'lodash';
+var _ = require('lodash');
 
 var EventEmitter = require('events').EventEmitter;
 var assign = require('object-assign');
@@ -30,15 +30,23 @@ var SessionStore = assign({}, EventEmitter.prototype, {
   },
 
   isLoggedIn: function() {
-    return _accessToken ? true : false;
+    return (_user && _user.access_token) ? true : false;
   },
 
   getAccessToken: function() {
-    return _accessToken;
+    if (_user && _user.access_token) {
+      return _user.access_token;
+    } else {
+      return '';
+    }
   },
 
   getEmail: function() {
-    return _email;
+    if (_user && _user.email) {
+      return _user.email;
+    } else {
+      return ''
+    }
   },
 
   getErrors: function() {
@@ -53,7 +61,10 @@ SessionStore.dispatchToken = AppDispatcher.register(function(action) {
 
     case SessionConstants.LOGIN:
       // extract the whole github profile from the `payload`
-      debugger
+      if (action.payload) {
+        debugger
+      }
+      
       var user = internals.extractUser(action.payload)
       var github = internals.extractGithub(action.payload)
 

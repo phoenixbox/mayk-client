@@ -10,8 +10,8 @@ var routes = (
   </Route>
 );
 
-module.exports = function() {
+export default function() {
   Router.run(routes, Router.HistoryLocation, function(Handler, state) {
     React.render(<Handler />, document.getElementById('mayk__app'));
   });
-};
+}
