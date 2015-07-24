@@ -100,11 +100,12 @@ let GitHubStore = _.assign({}, EventEmitter.prototype, {
   /**
    * @param {object} user
    */
-  getUsersOrgs(user) {
+  getUsersOrgs(github) {
     this.startLoading();
     let _this = this;
+    let token = github.github_oauth_token;
 
-    GitHubService.fetchUserOrgs(user.token)
+    GitHubService.fetchUserOrgs(token)
       .then((result) => {
         _orgs = result;
         _this.emitChange();
@@ -116,15 +117,17 @@ let GitHubStore = _.assign({}, EventEmitter.prototype, {
       })
       .done(() => {
         _this.stopLoading();
-        GitHubStore.getOrgRepos(user)
+        GitHubStore.getOrgRepos(github)
       })
   },
 
-  getUsersRepos(user) {
+  getUsersRepos(github) {
     this.startLoading();
     let _this = this;
+    debugger
+    let token = github.github_oauth_token;
 
-    GitHubService.fetchUserRepos(user.token)
+    GitHubService.fetchUserRepos(token)
       .then((result) => {
         _repos = result;
         GitHubStore.emitChange();
@@ -137,11 +140,12 @@ let GitHubStore = _.assign({}, EventEmitter.prototype, {
       })
   },
 
-  getOrgRepos(user) {
+  getOrgRepos(github) {
     this.startLoading();
     let _this = this;
+    let token = github.github_oauth_token;
 
-    GitHubService.fetchOrgRepos(_orgs, user.token)
+    GitHubService.fetchOrgRepos(_orgs, token)
       .then((result) => {
         _repos = internals.uniqueReposCollection(_repos, result);
         GitHubStore.emitChange();
@@ -154,7 +158,7 @@ let GitHubStore = _.assign({}, EventEmitter.prototype, {
       .done(()=>{
         _this.stopLoading();
         console.log('FETCHED REPOS *** NOW COMMIT ACTIVITY');
-        GitHubStore.getCommitActivity(_repos, user);
+        GitHubStore.getCommitActivity(_repos, github);
       })
   },
 
@@ -173,10 +177,10 @@ let GitHubStore = _.assign({}, EventEmitter.prototype, {
     GitHubStore.emitChange();
   },
 
-  getCommitActivity(repos, user) {
+  getCommitActivity(repos, github) {
     // #3 Fetch option
     GitHubStore.startLoading();
-    GitHubService.fetchCommitsForAllRepos(repos, user, this);
+    GitHubService.fetchCommitsForAllRepos(repos, github, this);
   }
 })
 
@@ -185,9 +189,10 @@ GitHubStore.dispatchToken = AppDispatcher.register((action) => {
     case ActionTypes.INIT:
       // TODO: add an env flag here to toggle between requests and mocks
       // GitHubStore.loadMockData();
-      // GitHubStore.getUsersRepos(action.user);
-      // GitHubStore.getUsersOrgs(action.user);
-      console.log('DONT DO ANYTHING JUST YET');
+      debugger
+      GitHubStore.getUsersRepos(action.github);
+      GitHubStore.getUsersOrgs(action.github);
+      // console.log('DONT DO ANYTHING JUST YET');
 
       // This is mocking _repos = MockRepos;
       // GitHubService.fetchCommitsForAllRepos(_repos, action.user, GitHubStore);

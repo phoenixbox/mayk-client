@@ -41,6 +41,14 @@ var SessionStore = assign({}, EventEmitter.prototype, {
     }
   },
 
+  getCurrentUser() {
+    return _user;
+  },
+
+  getGithub() {
+    return _github;
+  },
+
   getEmail: function() {
     if (_user && _user.email) {
       return _user.email;
@@ -60,11 +68,6 @@ SessionStore.dispatchToken = AppDispatcher.register(function(action) {
   switch(action.actionType) {
 
     case SessionConstants.LOGIN:
-      // extract the whole github profile from the `payload`
-      if (action.payload) {
-        debugger
-      }
-      
       var user = internals.extractUser(action.payload)
       var github = internals.extractGithub(action.payload)
 

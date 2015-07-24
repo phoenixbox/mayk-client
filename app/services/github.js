@@ -121,30 +121,36 @@ var internals = {
     https://developer.github.com/v3/repos/commits/#list-commits-on-a-repository
   */
 
-  buildCommitURL(repo, user, pageNumber) {
+  buildCommitURL(repo, github, pageNumber) {
     let commitURL = internals.stripURI_SHA(repo.commits_url);
+    var username = internals.extractUsername(github);
+    let token = github.github_oauth_token;
 
-    var username = internals.extractUsername(user);
-
-    return `${commitURL}?${internals.authRequest(user.token)}${PER_PAGE_MAX}&author=${username}`;
+    return `${commitURL}?${internals.authRequest(token)}${PER_PAGE_MAX}&author=${username}`;
   },
 
   /*
     Org url available on the user
     https://api.github.com/users/JumpstartLab/orgs
   */
-  repoStatURLs(repos, user) {
+  repoStatURLs(repos, github) {
+    let token = github.github_oauth_token;
+    let authedRequest = internals.authRequest(token);
+
     return _.map(repos, function(repo) {
-      return `${GITHUB_BASE}/repos/${repo.owner.login}/${repo.name}/stats/contributors?${internals.authRequest(user.token)}`;
+      return `${GITHUB_BASE}/repos/${repo.owner.login}/${repo.name}/stats/contributors?${authedRequest}`;
     })
   },
 
   // Commit activity
   // /repos/:owner/:repo/stats/commit_activity
   // Gives page 52 weeks over a year
-  repoCommitActivityURLs(repos, user) {
+  repoCommitActivityURLs(repos, github) {
+    let token = github.github_oauth_token;
+    let authedRequest = internals.authRequest(token);
+
     return _.map(repos, function(repo) {
-      return `${GITHUB_BASE}/repos/${repo.owner.login}/${repo.name}/stats/commit_activity?${internals.authRequest(user.token)}`
+      return `${GITHUB_BASE}/repos/${repo.owner.login}/${repo.name}/stats/commit_activity?${authedRequest}`
     })
   },
 
@@ -152,16 +158,18 @@ var internals = {
   // https://api.github.com/repos/sprintly/partyline/commits?access_token=9ab793b04bdd6413ceb442813c81dc9293ccb9b5&author=phoenixbox
   // Default to page 1
   // **** THIS IS ALLOWED!!! per_page=100
-  authorCommitsURLs(repos, user) {
-    var username = internals.extractUsername(user);
+  authorCommitsURLs(repos, github) {
+    let username = internals.extractUsername(github);
+    let token = github.github_oauth_token;
+    let authRequest = internals.authRequest(token);
 
     return _.map(repos, function(repo) {
-      return `${GITHUB_BASE}/repos/${repo.owner.login}/${repo.name}/commits?${internals.authRequest(user.token)}&author=${username}&per_page=100&page=1`
+      return `${GITHUB_BASE}/repos/${repo.owner.login}/${repo.name}/commits?${authRequest}&author=${username}&per_page=100&page=1`
     })
   },
 
-  repoCommitActivityRequests(repos, user) {
-    var URLS = internals.repoCommitActivityURLs(repos, user);
+  repoCommitActivityRequests(repos, github) {
+    var URLS = internals.repoCommitActivityURLs(repos, github);
 
     var commitActivityRequests = _.map(URLS, (url) => {
       return request.get(url)
@@ -241,10 +249,10 @@ var internals = {
     var commitControllerURL = '';
   },
 
-  authorCommitsPerRepo(repos, user, store) {
+  authorCommitsPerRepo(repos, github, store) {
     targetRepoCount = repos.length;
 
-    var commitURLs = internals.authorCommitsURLs(repos, user);
+    var commitURLs = internals.authorCommitsURLs(repos, github);
 
     _.each(commitURLs, (url, i) => {
      request.get(url)
@@ -267,8 +275,8 @@ var internals = {
 
   // ***************************************
 
-  repoCommitRequests(repos, user) {
-    var URLS = internals.repoStatURLs(repos, user);
+  repoCommitRequests(repos, github) {
+    var URLS = internals.repoStatURLs(repos, github);
 
     var commitRequests = _.map(URLS, (url) => {
       return request.get(url)
@@ -313,8 +321,9 @@ var internals = {
     return uri.replace(/{\/sha}/g, '')
   },
 
-  extractUsername(user) {
-    return user.github_url.split('https://github.com/')[1];
+  extractUsername(github) {
+    return github.github_username;
+    // return user.github_url.split('https://github.com/')[1];
   },
 
   groupReposByOrg(repos) {
@@ -378,12 +387,14 @@ module.exports.GitHubService = {
       })
   },
 
-  // **** Fetch options ****
+  /*
+    **** GitHubFetch options ****
+  */
 
   // #1: Commit Activity Data Across weeks
-  fetchAuthorCommits(repos, user) {
+  fetchAuthorCommits(repos, github) {
     // Week Data
-    let repoCommitRequests = internals.repoCommitRequests(repos, user);
+    let repoCommitRequests = internals.repoCommitRequests(repos, github);
 
     return Promise.all(repoCommitRequests)
       .spread(function() {
@@ -392,8 +403,8 @@ module.exports.GitHubService = {
   },
 
   // #2: Commit Activity Data but for days but all authors
-  fetchCommitActivity(repos, user) {
-    let repoCommitRequests = internals.repoCommitActivityRequests(repos, user);
+  fetchCommitActivity(repos, github) {
+    let repoCommitRequests = internals.repoCommitActivityRequests(repos, github);
 
     return Promise.all(repoCommitRequests)
       .spread(function() {
@@ -402,8 +413,8 @@ module.exports.GitHubService = {
   },
 
   // #3: Each commit for a user per repo
-  fetchCommitsForAllRepos(repos, user, store) {
-    internals.authorCommitsPerRepo(repos, user, store);
+  fetchCommitsForAllRepos(repos, github, store) {
+    internals.authorCommitsPerRepo(repos, github, store);
   }
 }
 

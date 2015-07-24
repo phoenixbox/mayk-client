@@ -4,22 +4,29 @@ var SessionConstants = require('../constants/SessionConstants.js')
 
 module.exports = {
   init: function() {
-    SessionAPI.login(__uuid, __access_token).then(function(error, res) {
-      if (res) {
-        if (res.error) {
-          var errorMsgs = _getErrors(res);
-          AppDispatcher.dispatch({
-            actionType: SessionConstants.SESSION_ERROR,
-            payload: err
-          });
-        } else {
-          // Should be the whole github api
-          json = JSON.parse(res.text);
-          AppDispatcher.dispatch({
-            actionType: SessionConstants.LOGIN,
-            payload: json
-          });
-        }
+    SessionAPI.login(__uuid, __access_token).then(function(res) {
+      if (res.error) {
+        var errorMsgs = _getErrors(res);
+        AppDispatcher.dispatch({
+          actionType: SessionConstants.SESSION_ERROR,
+          payload: err
+        });
+      } else {
+        /* Response Keys
+          "access_token":
+          "uuid":
+          "token_type":
+          "user_id":
+          "github_username":
+          "github_email":
+          "github_display_name":
+          "github_oauth_token":
+        */
+
+        AppDispatcher.dispatch({
+          actionType: SessionConstants.LOGIN,
+          payload: res.body
+        });
       }
     });
   },
@@ -30,13 +37,13 @@ module.exports = {
     });
   },
 
-  login: function(uuid, accessToken) {
-    SmallAppDispatcher.handleViewAction({
-      type: ActionTypes.LOGIN_REQUEST,
-      uuid,
-      accessToken
-    });
-
-    SessionAPI.login(uuid, accessToken);
-  }
+  // login: function(uuid, accessToken) {
+  //   SmallAppDispatcher.handleViewAction({
+  //     type: ActionTypes.LOGIN_REQUEST,
+  //     uuid,
+  //     accessToken
+  //   });
+  //
+  //   SessionAPI.login(uuid, accessToken);
+  // }
 };

@@ -12,6 +12,8 @@ var routes = (
 
 export default function() {
   Router.run(routes, Router.HistoryLocation, function(Handler, state) {
+    console.log('STATE: ', state);
+    
     React.render(<Handler />, document.getElementById('mayk__app'));
   });
 }

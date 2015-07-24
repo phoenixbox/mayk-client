@@ -4,7 +4,6 @@ import {EventEmitter} from 'events';
 import UserConstants from '../constants/UserConstants'
 let ActionTypes = UserConstants.ActionTypes;
 import Promise from  'bluebird'
-
 import request from 'superagent-bluebird-promise';
 const CHANGE_EVENT = 'change';
 

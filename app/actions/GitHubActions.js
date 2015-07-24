@@ -3,10 +3,10 @@ var GitHubConstants = require('../constants/GitHubConstants');
 var ActionTypes = GitHubConstants.ActionTypes;
 
 module.exports = {
-  init(user) {
+  init(github) {
     AppDispatcher.dispatch({
       type: ActionTypes.INIT,
-      user
+      github
     })
   },
 };
