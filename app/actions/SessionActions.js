@@ -1,15 +1,30 @@
 var AppDispatcher = require('../dispatchers/AppDispatcher.js');
 var SessionAPI = require('../lib/API/session.js');
 var SessionConstants = require('../constants/SessionConstants.js')
+var SessionStore = require('../stores/SessionStore.js')
+
+function _getErrors(res) {
+  var errorMsgs = ["Something went wrong, please try again"];
+  if ((json = JSON.parse(res.text))) {
+    if (json['errors']) {
+      errorMsgs = json['errors'];
+    } else if (json['error']) {
+      errorMsgs = [json['error']];
+    }
+  }
+  return errorMsgs;
+}
 
 module.exports = {
   init: function() {
-    SessionAPI.login(__uuid, __access_token).then(function(res) {
+    let access_token = SessionStore.getAccessToken() || __access_token;
+
+    SessionAPI.login(__uuid, access_token).then(function(res) {
       if (res.error) {
         var errorMsgs = _getErrors(res);
         AppDispatcher.dispatch({
-          actionType: SessionConstants.SESSION_ERROR,
-          payload: err
+          actionType: SessionConstants.LOGIN_ERROR,
+          payload: errorMsgs
         });
       } else {
         /* Response Keys
@@ -32,18 +47,17 @@ module.exports = {
   },
 
   logout: function() {
-    AppDispatcher.handleViewAction({
-      type: ActionTypes.LOGOUT
+    SessionAPI.logout().then(function(res) {
+      console.log('Logged Out');
+      if (res.status === 200) {
+        AppDispatcher.dispatch({
+          actionType: SessionConstants.LOGOUT
+        });
+      } else {
+        AppDispatcher.dispatch({
+          actionType: SessionConstants.LOGOUT_ERROR
+        });
+      }
     });
-  },
-
-  // login: function(uuid, accessToken) {
-  //   SmallAppDispatcher.handleViewAction({
-  //     type: ActionTypes.LOGIN_REQUEST,
-  //     uuid,
-  //     accessToken
-  //   });
-  //
-  //   SessionAPI.login(uuid, accessToken);
-  // }
+  }
 };

@@ -7,7 +7,8 @@ var url = require('url');
 
 server.connection({
   host: '0.0.0.0',
-  port: process.env.PORT || 3700
+  port: process.env.PORT || 3700,
+  routes: { cors: true }
 });
 
 server.views({
@@ -34,14 +35,20 @@ var plugins = [
       ]
     }
   },
-  require('./lib/api/user'),
-  require('./lib/oauth')
+  require('./lib/oauth'),
+  require('./lib/api/user')
 ]
 
 server.register(plugins
   , function(err) {
   if (err) {
     throw err;
+  }
+
+  function serveApp(request, reply) {
+    reply.view('layout.html', {
+      token: request.auth.credentials.token
+    })
   }
 
   server.route([
@@ -61,10 +68,23 @@ server.register(plugins
         auth: 'session'
       },
       handler: function (request, reply) {
-        var viewVars = internals.viewVars('profile', request);
+        var viewVars = internals.viewVars('mayk', request);
         console.log('VIEW VARS: ', viewVars);
 
-        reply.view('profile.html', viewVars);
+        reply.view('mayk.html', viewVars);
+      }
+    },
+    {
+      method: 'GET',
+      path: '/preview',
+      config: {
+        auth: 'session'
+      },
+      handler: function (request, reply) {
+        var viewVars = internals.viewVars('mayk', request);
+        console.log('VIEW VARS: ', viewVars);
+
+        reply.view('mayk.html', viewVars);
       }
     },
     {

@@ -14,6 +14,7 @@ import request from 'superagent-bluebird-promise';
 // Stores
 import {GitHubStore} from '../../stores/GitHubStore';
 import SessionStore from '../../stores/SessionStore';
+import SessionActions from '../../actions/SessionActions';
 import GitHubActions from '../../actions/GitHubActions';
 import UserActions from '../../actions/UserActions';
 
@@ -25,7 +26,7 @@ let BASE_URL = process.env.NODE_ENV === 'production' ? 'https://deveval.io' : 'h
 let internals = {
   getStateFromStores() {
     return {
-      user: SessionStore.getCurrentUser(),
+      user: SessionStore.getUser(),
       github: SessionStore.getGithub(),
       repos: GitHubStore.userRepos(),
       orgs: GitHubStore.userOrgs(),
@@ -36,14 +37,9 @@ let internals = {
   }
 }
 
-let Home  = React.createClass({
+let Profile  = React.createClass({
 
   mixins: [Navigation],
-
-  propTypes: {
-    user: ReactPropTypes.object,
-    github: ReactPropTypes.object
-  },
 
   getInitialState() {
     return internals.getStateFromStores();
@@ -102,12 +98,13 @@ let Home  = React.createClass({
   },
 
   signOut() {
-    SessionStore.logOut();
+    SessionActions.logout();
   },
 
   componentDidMount: function() {
     SessionStore.addChangeListener(this._onChange);
     GitHubStore.addChangeListener(this._onChange);
+    SessionActions.init();
   },
 
   componentWillUnmount: function() {
@@ -124,6 +121,7 @@ let Home  = React.createClass({
 
     return totalCommitsCount;
   },
+
 
   // Trigger action which interfaces to this
   // setInRedis() {
@@ -178,6 +176,11 @@ let Home  = React.createClass({
   //       }
   //     });
   // },
+// GitHubActions.init(github);
+
+  preview() {
+    this.transitionTo('preview');
+  },
 
   render() {
     /*
@@ -185,10 +188,9 @@ let Home  = React.createClass({
       this.fetchFromRedis();
       this.setInRedis();
     */
-    if (!_.isEmpty(this.props.github) && _.isEmpty(this.state.repos)) {
-      console.log('INITIALIZING: ');
-      GitHubActions.init(this.props.github);
-    }
+    console.log('GITHUB DETAILS: ', this.state.github);
+    console.log('props: ', this.props);
+
     let loadingIndicator;
     let table = this.buildReposTable();
     let commitTotal = `Total Commits: ${this.tableMetaData()}`;
@@ -205,9 +207,10 @@ let Home  = React.createClass({
     }
 
     return (
-      <div className="col-sm-12">
+      <div className="profile col-sm-12">
         <h3>{commitTotal}</h3>
         <div><a className="btn btn-primary" onClick={this.signOut}>Sign Out</a></div>
+        <div><a className="btn btn-default" onClick={this.preview}>Preview</a></div>
         <div ref='calendar' id="cal-heatmap">
           <div id='replaceable-container'>
             {commitGraph}
@@ -223,11 +226,8 @@ let Home  = React.createClass({
     Event handler for 'change' events coming from the StoresStore
   */
   _onChange: function() {
-    if (!_.isEmpty(this.props.github) && _.isEmpty(this.state.repos)) {
-      debugger
-    }
     this.setState(internals.getStateFromStores());
   }
 })
 
-module.exports = Home;
+module.exports = Profile;

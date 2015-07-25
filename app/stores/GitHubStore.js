@@ -104,6 +104,7 @@ let GitHubStore = _.assign({}, EventEmitter.prototype, {
     this.startLoading();
     let _this = this;
     let token = github.github_oauth_token;
+    console.log('1 TOKEN: ', token)
 
     GitHubService.fetchUserOrgs(token)
       .then((result) => {
@@ -124,8 +125,8 @@ let GitHubStore = _.assign({}, EventEmitter.prototype, {
   getUsersRepos(github) {
     this.startLoading();
     let _this = this;
-    debugger
     let token = github.github_oauth_token;
+    console.log('2 TOKEN: ', token)
 
     GitHubService.fetchUserRepos(token)
       .then((result) => {
@@ -144,6 +145,7 @@ let GitHubStore = _.assign({}, EventEmitter.prototype, {
     this.startLoading();
     let _this = this;
     let token = github.github_oauth_token;
+    console.log('3 TOKEN: ', token)
 
     GitHubService.fetchOrgRepos(_orgs, token)
       .then((result) => {
@@ -189,7 +191,8 @@ GitHubStore.dispatchToken = AppDispatcher.register((action) => {
     case ActionTypes.INIT:
       // TODO: add an env flag here to toggle between requests and mocks
       // GitHubStore.loadMockData();
-      debugger
+      _isLoading = true;
+      console.log('Github store init call');
       GitHubStore.getUsersRepos(action.github);
       GitHubStore.getUsersOrgs(action.github);
       // console.log('DONT DO ANYTHING JUST YET');
@@ -337,101 +340,4 @@ module.exports.internals = internals;
 // Repo url if public
 // description
 // private
-// permissions
-
-
-
-// Repo signature
-// {
-//   "id": 780635,
-//   "name": "quickleft_v2",
-//   "full_name": "quickleft/quickleft_v2",
-//   "owner": {
-//     "login": "quickleft",
-//     "id": 27339,
-//     "avatar_url": "https://avatars.githubusercontent.com/u/27339?v=3",
-//     "gravatar_id": "",
-//     "url": "https://api.github.com/users/quickleft",
-//     "html_url": "https://github.com/quickleft",
-//     "followers_url": "https://api.github.com/users/quickleft/followers",
-//     "following_url": "https://api.github.com/users/quickleft/following{/other_user}",
-//     "gists_url": "https://api.github.com/users/quickleft/gists{/gist_id}",
-//     "starred_url": "https://api.github.com/users/quickleft/starred{/owner}{/repo}",
-//     "subscriptions_url": "https://api.github.com/users/quickleft/subscriptions",
-//     "organizations_url": "https://api.github.com/users/quickleft/orgs",
-//     "repos_url": "https://api.github.com/users/quickleft/repos",
-//     "events_url": "https://api.github.com/users/quickleft/events{/privacy}",
-//     "received_events_url": "https://api.github.com/users/quickleft/received_events",
-//     "type": "Organization",
-//     "site_admin": false
-//   },
-//   "private": true,
-//   "html_url": "https://github.com/quickleft/quickleft_v2",
-//   "description": "main site",
-//   "fork": false,
-//   "url": "https://api.github.com/repos/quickleft/quickleft_v2",
-//   "forks_url": "https://api.github.com/repos/quickleft/quickleft_v2/forks",
-//   "keys_url": "https://api.github.com/repos/quickleft/quickleft_v2/keys{/key_id}",
-//   "collaborators_url": "https://api.github.com/repos/quickleft/quickleft_v2/collaborators{/collaborator}",
-//   "teams_url": "https://api.github.com/repos/quickleft/quickleft_v2/teams",
-//   "hooks_url": "https://api.github.com/repos/quickleft/quickleft_v2/hooks",
-//   "issue_events_url": "https://api.github.com/repos/quickleft/quickleft_v2/issues/events{/number}",
-//   "events_url": "https://api.github.com/repos/quickleft/quickleft_v2/events",
-//   "assignees_url": "https://api.github.com/repos/quickleft/quickleft_v2/assignees{/user}",
-//   "branches_url": "https://api.github.com/repos/quickleft/quickleft_v2/branches{/branch}",
-//   "tags_url": "https://api.github.com/repos/quickleft/quickleft_v2/tags",
-//   "blobs_url": "https://api.github.com/repos/quickleft/quickleft_v2/git/blobs{/sha}",
-//   "git_tags_url": "https://api.github.com/repos/quickleft/quickleft_v2/git/tags{/sha}",
-//   "git_refs_url": "https://api.github.com/repos/quickleft/quickleft_v2/git/refs{/sha}",
-//   "trees_url": "https://api.github.com/repos/quickleft/quickleft_v2/git/trees{/sha}",
-//   "statuses_url": "https://api.github.com/repos/quickleft/quickleft_v2/statuses/{sha}",
-//   "languages_url": "https://api.github.com/repos/quickleft/quickleft_v2/languages",
-//   "stargazers_url": "https://api.github.com/repos/quickleft/quickleft_v2/stargazers",
-//   "contributors_url": "https://api.github.com/repos/quickleft/quickleft_v2/contributors",
-//   "subscribers_url": "https://api.github.com/repos/quickleft/quickleft_v2/subscribers",
-//   "subscription_url": "https://api.github.com/repos/quickleft/quickleft_v2/subscription",
-//   "commits_url": "https://api.github.com/repos/quickleft/quickleft_v2/commits{/sha}",
-//   "git_commits_url": "https://api.github.com/repos/quickleft/quickleft_v2/git/commits{/sha}",
-//   "comments_url": "https://api.github.com/repos/quickleft/quickleft_v2/comments{/number}",
-//   "issue_comment_url": "https://api.github.com/repos/quickleft/quickleft_v2/issues/comments{/number}",
-//   "contents_url": "https://api.github.com/repos/quickleft/quickleft_v2/contents/{+path}",
-//   "compare_url": "https://api.github.com/repos/quickleft/quickleft_v2/compare/{base}...{head}",
-//   "merges_url": "https://api.github.com/repos/quickleft/quickleft_v2/merges",
-//   "archive_url": "https://api.github.com/repos/quickleft/quickleft_v2/{archive_format}{/ref}",
-//   "downloads_url": "https://api.github.com/repos/quickleft/quickleft_v2/downloads",
-//   "issues_url": "https://api.github.com/repos/quickleft/quickleft_v2/issues{/number}",
-//   "pulls_url": "https://api.github.com/repos/quickleft/quickleft_v2/pulls{/number}",
-//   "milestones_url": "https://api.github.com/repos/quickleft/quickleft_v2/milestones{/number}",
-//   "notifications_url": "https://api.github.com/repos/quickleft/quickleft_v2/notifications{?since,all,participating}",
-//   "labels_url": "https://api.github.com/repos/quickleft/quickleft_v2/labels{/name}",
-//   "releases_url": "https://api.github.com/repos/quickleft/quickleft_v2/releases{/id}",
-//   "created_at": "2010-07-17T16:50:56Z",
-//   "updated_at": "2014-01-11T00:06:16Z",
-//   "pushed_at": "2012-01-23T17:22:27Z",
-//   "git_url": "git://github.com/quickleft/quickleft_v2.git",
-//   "ssh_url": "git@github.com:quickleft/quickleft_v2.git",
-//   "clone_url": "https://github.com/quickleft/quickleft_v2.git",
-//   "svn_url": "https://github.com/quickleft/quickleft_v2",
-//   "homepage": "quickleft.com",
-//   "size": 42504,
-//   "stargazers_count": 0,
-//   "watchers_count": 0,
-//   "language": "Ruby",
-//   "has_issues": true,
-//   "has_downloads": true,
-//   "has_wiki": true,
-//   "has_pages": false,
-//   "forks_count": 0,
-//   "mirror_url": null,
-//   "open_issues_count": 0,
-//   "forks": 0,
-//   "open_issues": 0,
-//   "watchers": 0,
-//   "default_branch": "master",
-//   "master_branch": "master",
-//   "permissions": {
-//     "admin": false,
-//     "push": true,
-//     "pull": true
-//   }
-// }
+// permissio

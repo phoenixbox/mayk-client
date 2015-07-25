@@ -38,7 +38,7 @@ describe('#SessionStore', function () {
       })
     })
 
-    describe.only('#isValid', function () {
+    describe('#isValid', function () {
       it('returns true when it has values for its keys', function () {
         var validObject = {key: 'key', key2: 'key2'}
         assert.isTrue(SessionStore.internals.isValid(validObject))

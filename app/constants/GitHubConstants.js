@@ -2,6 +2,7 @@ var keyMirror = require('keymirror');
 
 module.exports = {
   ActionTypes: keyMirror({
-    INIT: null
+    INIT: null,
+    PUBLISH_PORTFOLIO: null
   })
 }

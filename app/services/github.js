@@ -25,6 +25,7 @@ var targetRepoCount = 0;
 
 var internals = {
   authRequest(token) {
+    console.log('4 TOKEN: ', token)
     return 'access_token='+token;
   },
 
@@ -42,6 +43,7 @@ var internals = {
   },
 
   repoRequests(pageCount, token) {
+    console.log('5 TOKEN: ', token)
     var uri = `${GITHUB_BASE}${USER_REPOS}?${internals.authRequest(token)}`;
     let repoRequests = [];
 
@@ -65,17 +67,20 @@ var internals = {
   },
 
   getUserInfo(token) {
+    console.log('6 TOKEN: ', token)
     var uri = `${GITHUB_BASE}${USER}?${internals.authRequest(token)}`;
     return internals.getRequestWithUri(uri);
   },
 
   orgsRequest(token) {
+    console.log('7 TOKEN: ', token)
     var uri = `${GITHUB_BASE}${USER_ORGS}?${internals.authRequest(token)}`;
 
     return internals.getRequestWithUri(uri);
   },
   // TODO: Use the paging headers to know how many repos to get
   orgRepoRequests(orgs, token) {
+    console.log('8 TOKEN: ', token)
     let allOrgRepoRequests = _.chain(orgs)
                                 .map((org) => {
                                   var uri = `${org.repos_url}?${internals.authRequest(token)}`;
@@ -125,6 +130,7 @@ var internals = {
     let commitURL = internals.stripURI_SHA(repo.commits_url);
     var username = internals.extractUsername(github);
     let token = github.github_oauth_token;
+    console.log('9 TOKEN: ', token)
 
     return `${commitURL}?${internals.authRequest(token)}${PER_PAGE_MAX}&author=${username}`;
   },
@@ -135,6 +141,7 @@ var internals = {
   */
   repoStatURLs(repos, github) {
     let token = github.github_oauth_token;
+    console.log('10 TOKEN: ', token)
     let authedRequest = internals.authRequest(token);
 
     return _.map(repos, function(repo) {
@@ -147,6 +154,7 @@ var internals = {
   // Gives page 52 weeks over a year
   repoCommitActivityURLs(repos, github) {
     let token = github.github_oauth_token;
+    console.log('11 TOKEN: ', token)
     let authedRequest = internals.authRequest(token);
 
     return _.map(repos, function(repo) {
@@ -161,6 +169,7 @@ var internals = {
   authorCommitsURLs(repos, github) {
     let username = internals.extractUsername(github);
     let token = github.github_oauth_token;
+    console.log('12 TOKEN: ', token)
     let authRequest = internals.authRequest(token);
 
     return _.map(repos, function(repo) {
@@ -354,6 +363,7 @@ var internals = {
 
 module.exports.GitHubService = {
   fetchUserOrgs(token) {
+    console.log('13 TOKEN: ', token)
     return Promise.all([
       internals.orgsRequest(token)
     ])
@@ -363,6 +373,7 @@ module.exports.GitHubService = {
   },
 
   fetchUserRepos(token) {
+    console.log('14 TOKEN: ', token)
     return Promise.all([
       internals.getUserInfo(token)
     ])
@@ -379,12 +390,17 @@ module.exports.GitHubService = {
   },
 
   fetchOrgRepos(orgs, token) {
+    console.log('15 TOKEN: ', token)
     let orgRepoRequests = internals.orgRepoRequests(orgs, token);
 
     return Promise.all(orgRepoRequests)
       .spread(function() {
         return internals.reduceResponses(arguments);
       })
+  },
+
+  publish(github) {
+    console.log('TIME TO PUBLISH!!');
   },
 
   /*

@@ -44,7 +44,7 @@ var SessionStore = assign({}, EventEmitter.prototype, {
     }
   },
 
-  getCurrentUser() {
+  getUser() {
     return _user;
   },
 
@@ -87,23 +87,28 @@ SessionStore.dispatchToken = AppDispatcher.register(function(action) {
       */
       console.log('*** Github init in session ***')
       if (!GitHubStore.isLoading()) {
-        _.delay(GitHubActions.init, 1000, github);
+        // _.delay(GitHubActions.init, 1000, github);
       }
 
       SessionStore.emitChange();
       break;
-
+    case SessionConstants.LOGIN_ERROR:
+      console.log('LOGIN ERROR: ', action.payload);
+      break
     case SessionConstants.LOGOUT:
-      _accessToken = null;
-      _email = null;
-      sessionStorage.removeItem('accessToken');
-      sessionStorage.removeItem('email');
-      SessionStore.emitChange();
+      // Flush the session related variables
+      __access_token = null;
+      __uuid = null;
+      _user = null;
+      _github = null;
+
+      // Hard reset of route to decouple from ReactRouter
+      window.location.href = '/';
       break;
 
-    case SessionConstants.SESSION_ERROR:
-      console.log('HANDLE THE SESSION ERROR');
-
+    case SessionConstants.LOGOUT_ERROR:
+      console.log('SESSION LOGOUT ERROR');
+      break;
     default:
   }
 
