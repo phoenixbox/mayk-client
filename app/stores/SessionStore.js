@@ -1,11 +1,13 @@
-var AppDispatcher = require('../dispatchers/AppDispatcher');
-var AppConstants = require('../constants/AppConstants');
-var _ = require('lodash');
+import AppDispatcher from '../dispatchers/AppDispatcher';
+import AppConstants from '../constants/AppConstants';
+import _ from 'lodash';
 
-var EventEmitter = require('events').EventEmitter;
-var assign = require('object-assign');
+import {EventEmitter} from 'events';
+import assign from 'object-assign';
 
-var SessionConstants = require('../constants/SessionConstants.js');
+import SessionConstants from '../constants/SessionConstants.js';
+import GitHubActions from '../actions/GitHubActions';
+import {GitHubStore} from '../stores/GitHubStore';
 var CHANGE_EVENT = 'change';
 
 // Load an access token from the session storage, you might want to implement
@@ -18,6 +20,7 @@ var _errors = [];
 var SessionStore = assign({}, EventEmitter.prototype, {
 
   emitChange: function() {
+    console.log('EMIT SESSION CHANGED');
     this.emit(CHANGE_EVENT);
   },
 
@@ -78,6 +81,15 @@ SessionStore.dispatchToken = AppDispatcher.register(function(action) {
       if (action.errors) {
         _errors = action.errors;
       }
+      /*
+        Why getting called twice?
+        Hack to avoid 2dispatches at the same time
+      */
+      console.log('*** Github init in session ***')
+      if (!GitHubStore.isLoading()) {
+        _.delay(GitHubActions.init, 1000, github);
+      }
+
       SessionStore.emitChange();
       break;
 
