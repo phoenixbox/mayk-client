@@ -36,7 +36,8 @@ var plugins = [
     }
   },
   require('./lib/oauth'),
-  require('./lib/api/user')
+  require('./lib/api/user'),
+  require('./lib/api/github')
 ]
 
 server.register(plugins
@@ -85,6 +86,32 @@ server.register(plugins
         console.log('VIEW VARS: ', viewVars);
 
         reply.view('mayk.html', viewVars);
+      }
+    },
+    /* should be a protected endpoint
+      Need to pass auth params from the client to the hapi app?
+      What is it looking for?
+      auth: 'session',
+    */
+    {
+      method: 'POST',
+      path: '/publish',
+      config: {
+        pre: [
+          {
+            method: 'getPortfolioData(auth.credentials.profile)',
+            assign: 'portfolioData',
+            failAction: 'ignore'
+          },
+          {
+            method: 'publishGithubPage(auth.credentials.profile, pre.portfolioData)',
+            assign: 'portfolioData',
+            failAction: 'ignore'
+          }
+        ]
+      },
+      handler: function (request, reply) {
+        reply('ok')
       }
     },
     {

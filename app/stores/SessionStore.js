@@ -7,7 +7,7 @@ import assign from 'object-assign';
 
 import SessionConstants from '../constants/SessionConstants.js';
 import GitHubActions from '../actions/GitHubActions';
-import {GitHubStore} from '../stores/GitHubStore';
+import GitHubStore from '../stores/GitHubStore';
 var CHANGE_EVENT = 'change';
 
 // Load an access token from the session storage, you might want to implement
@@ -81,6 +81,10 @@ SessionStore.dispatchToken = AppDispatcher.register(function(action) {
       if (action.errors) {
         _errors = action.errors;
       }
+
+      // Should I be refreshing the user token?
+      // if development
+      // __access_token = user.access_token
       /*
         Why getting called twice?
         Hack to avoid 2dispatches at the same time

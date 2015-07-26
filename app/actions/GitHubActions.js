@@ -1,5 +1,6 @@
 import AppDispatcher from '../dispatchers/AppDispatcher';
 import GitHubConstants from '../constants/GitHubConstants';
+import GithubStore from '../stores/GithubStore';
 // TODO: This should be import {ActionTypes} - also remove that ActionTypes name?
 var ActionTypes = GitHubConstants.ActionTypes;
 // TODO: Bad double pattern of service and api
@@ -13,11 +14,15 @@ module.exports = {
     })
   },
   publishPortfolio(github) {
-    debugger
+    // TODO: The right place to do this state update?
+    GithubStore.startLoading();
     GitHubService.publish(github).then(function(res) {
-      AppDispatcher.dispatch({
-        type: ActionTypes.PUBLISHED_PORTFOLIO,
-      })
+      GithubStore.stopLoading();
+      if (res.status === 200) {
+        AppDispatcher.dispatch({
+          type: ActionTypes.PUBLISHED_PORTFOLIO,
+        })
+      }
     })
   },
 };

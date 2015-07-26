@@ -12,7 +12,7 @@ import {Table} from 'react-bootstrap';
 import request from 'superagent-bluebird-promise';
 
 // Stores
-import {GitHubStore} from '../../stores/GitHubStore';
+import GitHubStore from '../../stores/GitHubStore';
 import SessionStore from '../../stores/SessionStore';
 import SessionActions from '../../actions/SessionActions';
 import GitHubActions from '../../actions/GitHubActions';
@@ -104,7 +104,16 @@ let Profile  = React.createClass({
   componentDidMount: function() {
     SessionStore.addChangeListener(this._onChange);
     GitHubStore.addChangeListener(this._onChange);
-    SessionActions.init();
+
+    /*
+      Session control point should be at the top of
+      And passed as props
+    */
+
+    if (_.isEmpty(SessionStore.getUser())) {
+      console.log('Session Init');
+      SessionActions.init();
+    }
   },
 
   componentWillUnmount: function() {

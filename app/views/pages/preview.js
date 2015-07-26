@@ -4,7 +4,7 @@
 import React from 'react/addons';
 let ReactPropTypes = React.PropTypes;
 import Router, {Link, Navigation} from 'react-router';
-import {GitHubStore} from '../../stores/GitHubStore';
+import GithubStore from '../../stores/GitHubStore';
 import SessionStore from '../../stores/SessionStore';
 import GitHubActions from '../../actions/GitHubActions';
 
@@ -16,11 +16,11 @@ let internals = {
   getStateFromStores() {
     return {
       github: SessionStore.getGithub(),
-      repos: GitHubStore.userRepos(),
-      orgs: GitHubStore.userOrgs(),
-      commits: GitHubStore.userCommits(),
-      individualCommits: GitHubStore.individualCommits(),
-      isLoading: GitHubStore.isLoading(),
+      repos: GithubStore.userRepos(),
+      orgs: GithubStore.userOrgs(),
+      commits: GithubStore.userCommits(),
+      individualCommits: GithubStore.individualCommits(),
+      isLoading: GithubStore.isLoading(),
     }
   }
 }
@@ -55,6 +55,14 @@ let Preview = React.createClass({
     )
   },
 
+  componentDidMount() {
+    GithubStore.addChangeListener(this._onChange)
+  },
+
+  componentWillUnmount() {
+    GithubStore.removeChangeListener(this._onChange)
+  },
+
   publishPortfolio() {
     // SHIM: there will be a portfolio store which will represent all the data required for page generation
     let requiredAttrs = this.state.github;
@@ -64,10 +72,15 @@ let Preview = React.createClass({
 
   render() {
     let userDetails = this.githubUserMetaDetails();
+    let publishClasses = React.addons.classSet({
+      "btn": true,
+      "btn btn-default": !this.state.isLoading,
+      "btn btn-warning": this.state.isLoading
+    })
 
     return (
       <div className="preview col-sm-12">
-        <div><a className="btn btn-default" onClick={this.publishPortfolio}>Publish</a></div>
+        <div><a className={publishClasses} onClick={this.publishPortfolio}>Publish</a></div>
         <div className="preview__avatar">
           <div className="octagon-mask">
             <Isvg src="/img/svg/mayk_octagon.svg">
@@ -77,6 +90,10 @@ let Preview = React.createClass({
         </div>
       </div>
     )
+  },
+
+  _onChange() {
+
   }
 })
 

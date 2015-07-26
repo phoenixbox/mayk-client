@@ -58,10 +58,14 @@ let GitHubStore = _.assign({}, EventEmitter.prototype, {
 
   startLoading() {
     _isLoading = true;
+
+    this.emitChange();
   },
 
   stopLoading() {
     _isLoading = false;
+
+    this.emitChange();
   },
 
   incrementCommitsForRepoCount() {
@@ -200,6 +204,10 @@ GitHubStore.dispatchToken = AppDispatcher.register((action) => {
       // This is mocking _repos = MockRepos;
       // GitHubService.fetchCommitsForAllRepos(_repos, action.user, GitHubStore);
       break;
+    case ActionTypes.PUBLISHED_PORTFOLIO:
+      // TODO: Have a post back link available to populate view
+      console.log('PUBLISHED_PORTFOLIO!')
+      GitHubStore.emitChange()
     default:
   }
 })
@@ -333,7 +341,7 @@ var internals = {
   }
 }
 
-module.exports.GitHubStore = GitHubStore;
+module.exports = GitHubStore;
 
 module.exports.internals = internals;
 // homepage

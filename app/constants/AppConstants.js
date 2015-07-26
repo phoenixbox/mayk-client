@@ -10,7 +10,7 @@ module.exports = {
   APIEndpoints: {
     LOGIN:          RAILSRoot + "/v1/login",
     LOGOUT:         HAPIRoot + "/logout",
-    PUBLISH:        'value'
+    PUBLISH:         HAPIRoot + "/publish"
   },
 
   PayloadSources: keyMirror({

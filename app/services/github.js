@@ -2,6 +2,7 @@ let _ = require('lodash');
 import request from 'superagent-bluebird-promise';
 import Promise from 'bluebird';
 import async from 'async';
+import { APIEndpoints } from '../constants/AppConstants';
 // TODO: load flux files
 // import GitHubActions from '../actions/GitHubActions.js';
 
@@ -400,7 +401,8 @@ module.exports.GitHubService = {
   },
 
   publish(github) {
-    console.log('TIME TO PUBLISH!!');
+    console.log('POST TO HAPI PUBLISH');
+    return request.post(APIEndpoints.PUBLISH)
   },
 
   /*
