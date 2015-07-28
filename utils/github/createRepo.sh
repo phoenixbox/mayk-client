@@ -3,7 +3,7 @@ GIT_REMOTE_URL=git@github.com:$USER/$GIT_PATH/$REPO
 echo "--"
 echo "-- Initializing local repo & pushing to remote"
 echo "--"
-touch .gitignore
+touch newfile.txt
 git init
 git add .
 git commit -m 'initial commit'
