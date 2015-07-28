@@ -74,8 +74,8 @@ let Preview = React.createClass({
     let userDetails = this.githubUserMetaDetails();
     let publishClasses = React.addons.classSet({
       "btn": true,
-      "btn btn-default": !this.state.isLoading,
-      "btn btn-warning": this.state.isLoading
+      "btn-default": !this.state.isLoading,
+      "btn-warning": this.state.isLoading
     })
 
     return (

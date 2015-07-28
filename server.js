@@ -94,20 +94,26 @@ server.register(plugins
       auth: 'session',
     */
     {
-      method: 'POST',
+      method: ['GET', 'POST'],
       path: '/publish',
       config: {
+        // auth: 'session',
         pre: [
           {
-            method: 'getPortfolioData(auth.credentials.profile)',
-            assign: 'portfolioData',
+            method: 'findOrCreateMaykRepo(auth.credentials.token, auth.credentials.profile)',
+            assign: 'maykRepo',
             failAction: 'ignore'
           },
-          {
-            method: 'publishGithubPage(auth.credentials.profile, pre.portfolioData)',
-            assign: 'portfolioData',
-            failAction: 'ignore'
-          }
+          // {
+          //   method: 'getPortfolioData(auth.credentials.profile)',
+          //   assign: 'portfolioData',
+          //   failAction: 'ignore'
+          // },
+          // {
+          //   method: 'publishGithubPage(auth.credentials.profile, pre.portfolioData)',
+          //   assign: 'portfolioData',
+          //   failAction: 'ignore'
+          // }
         ]
       },
       handler: function (request, reply) {
