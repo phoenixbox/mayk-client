@@ -8,3 +8,6 @@ public/js/mayk.js
 public/js/mayk.js.map
 public/css/main.css*
 npm-debug.log*
+aws.json
+temp/js/*.js
+temp/css/*.js
