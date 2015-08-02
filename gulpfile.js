@@ -15,13 +15,30 @@ var knownOptions = {
 var options = minimist(process.argv.slice(2), knownOptions);
 
 gulp.task('clean', function () {
-  del(['./temp/js/*.js', './temp/css/*.css'], function (err, paths) {
+  del([
+    './temp/js/*.js',
+    './temp/css/*.css',
+    './temp/index.html',
+    './temp/index.html-e',
+  ], function (err, paths) {
     gutil.log(
       'Deleted files/folders:\n',
       gutil.colors.cyan(paths.join('\n'))
     );
   });
 });
+
+gulp.task('cleanSedResult', function () {
+  del([
+    './temp/index.html-e',
+  ], function (err, paths) {
+    gutil.log(
+      'Deleted files/folders:\n',
+      gutil.colors.cyan(paths.join('\n'))
+    );
+  });
+});
+
 
 function run(command) {
   var child = exec(command);

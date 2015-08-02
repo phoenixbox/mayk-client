@@ -10,4 +10,5 @@ public/css/main.css*
 npm-debug.log*
 aws.json
 temp/js/*.js
-temp/css/*.js
+temp/template.html
+temp/css/*.css
