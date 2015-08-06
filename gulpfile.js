@@ -16,10 +16,7 @@ var options = minimist(process.argv.slice(2), knownOptions);
 
 gulp.task('clean', function () {
   del([
-    './temp/js/*.js',
-    './temp/css/*.css',
-    './temp/index.html',
-    './temp/index.html-e',
+    './temp/**',
   ], function (err, paths) {
     gutil.log(
       'Deleted files/folders:\n',
@@ -28,6 +25,9 @@ gulp.task('clean', function () {
   });
 });
 
+/*
+  TODO: Prevent the actual creation of this mutated file
+*/
 gulp.task('cleanSedResult', function () {
   del([
     './temp/index.html-e',
@@ -38,7 +38,6 @@ gulp.task('cleanSedResult', function () {
     );
   });
 });
-
 
 function run(command) {
   var child = exec(command);
