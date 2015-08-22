@@ -14,13 +14,10 @@ const REPO_PAGE_LIMIT = 30;
 const PER_PAGE_MAX = '&per_page=100';
 
 var COMMITS = [];
-
 var COMMIT_DATA = [];
-
 var RESULTS = {};
 var REQUESTS = [];
-
-var STORE = {}
+var STORE = {};
 
 var targetRepoCount = 0;
 
@@ -117,6 +114,7 @@ var internals = {
                   .set('Accept', 'application/vnd.github.v3+json')
                   .set('Accept', 'application/vnd.github.moondragon+json') // Orgs required accept header
   },
+
   /*
     URI: /repos/:owner/:repo/commits
     {sha} string default branch master
@@ -126,7 +124,6 @@ var internals = {
     {until} string ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ
     https://developer.github.com/v3/repos/commits/#list-commits-on-a-repository
   */
-
   buildCommitURL(repo, github, pageNumber) {
     let commitURL = internals.stripURI_SHA(repo.commits_url);
     var username = internals.extractUsername(github);

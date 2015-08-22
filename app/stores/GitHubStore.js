@@ -344,8 +344,3 @@ var internals = {
 module.exports = GitHubStore;
 
 module.exports.internals = internals;
-// homepage
-// Repo url if public
-// description
-// private
-// permissio

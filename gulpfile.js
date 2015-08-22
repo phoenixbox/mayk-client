@@ -28,9 +28,11 @@ gulp.task('clean', function () {
 /*
   TODO: Prevent the actual creation of this mutated file
 */
-gulp.task('cleanSedResult', function () {
+gulp.task('cleanBuiltAssets', function () {
   del([
     './temp/index.html-e',
+    './temp/css/**',
+    './temp/js/**',
   ], function (err, paths) {
     gutil.log(
       'Deleted files/folders:\n',
