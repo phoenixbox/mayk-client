@@ -83,26 +83,21 @@ server.register(plugins
       },
       handler: function (request, reply) {
         var viewVars = internals.viewVars('mayk', request);
-        console.log('VIEW VARS: ', viewVars);
 
         reply.view('mayk.html', viewVars);
       }
     },
-    /* should be a protected endpoint
-      Need to pass auth params from the client to the hapi app?
-      What is it looking for?
-      auth: 'session',
+    /*
+      should be a protected endpoint/token based?
     */
     {
-      method: ['GET', 'POST'],
+      method: ['POST'],
       path: '/publish',
       config: {
-        // auth: 'session',
         pre: [
           {
-            method: 'findOrCreateMaykRepo(auth.credentials.token, auth.credentials.profile)',
-            assign: 'maykRepo',
-            failAction: 'ignore'
+            method: 'findOrCreateMaykRepo(payload)',
+            assign: 'maykRepo'
           },
           // {
           //   method: 'getPortfolioData(auth.credentials.profile)',
@@ -117,7 +112,7 @@ server.register(plugins
         ]
       },
       handler: function (request, reply) {
-        reply('ok')
+        reply.redirect('/profile');
       }
     },
     {
