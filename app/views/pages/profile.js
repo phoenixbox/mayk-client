@@ -24,10 +24,10 @@ import {CommitGraph} from '../components/commit-graph';
 let BASE_URL = process.env.NODE_ENV === 'production' ? 'https://deveval.io' : 'http://127.0.0.1:3000';
 
 let internals = {
+  // user: SessionStore.getUser(),
+  // github: SessionStore.getGithub(),
   getStateFromStores() {
     return {
-      user: SessionStore.getUser(),
-      github: SessionStore.getGithub(),
       repos: GitHubStore.userRepos(),
       orgs: GitHubStore.userOrgs(),
       commits: GitHubStore.userCommits(),
@@ -38,6 +38,11 @@ let internals = {
 }
 
 let Profile  = React.createClass({
+
+  propTypes: {
+    user: React.PropTypes.object,
+    github: React.PropTypes.object
+  },
 
   mixins: [Navigation],
 
@@ -102,22 +107,10 @@ let Profile  = React.createClass({
   },
 
   componentDidMount: function() {
-    SessionStore.addChangeListener(this._onChange);
     GitHubStore.addChangeListener(this._onChange);
-
-    /*
-      Session control point should be at the top of
-      And passed as props
-    */
-
-    if (_.isEmpty(SessionStore.getUser())) {
-      console.log('Session Init');
-      SessionActions.init();
-    }
   },
 
   componentWillUnmount: function() {
-    SessionStore.removeChangeListener(this._onChange);
     GitHubStore.removeChangeListener(this._onChange);
   },
 
@@ -197,8 +190,6 @@ let Profile  = React.createClass({
       this.fetchFromRedis();
       this.setInRedis();
     */
-    console.log('GITHUB DETAILS: ', this.state.github);
-    console.log('props: ', this.props);
 
     let loadingIndicator;
     let table = this.buildReposTable();

@@ -4,11 +4,54 @@ import { RouteHandler } from "react-router";
 import SessionStore from '../stores/SessionStore.js';
 import SessionActions from '../actions/SessionActions.js';
 
-export default React.createClass({
+let internals = {
+  getSessionFromStore() {
+    let user = SessionStore.getUser();
+    if (_.isEmpty(user)) {
+      console.log('Session Init');
+      SessionActions.init();
+    }
+
+    return {
+      user: user,
+      github: SessionStore.getGithub()
+    }
+  }
+}
+
+let App = React.createClass({
+
+  getInitialState() {
+    return internals.getSessionFromStore();
+  },
+
+  componentDidMount: function() {
+    SessionStore.addChangeListener(this._onChange);
+  },
+
+  componentWillUnmount: function() {
+    SessionStore.removeChangeListener(this._onChange);
+  },
+
   render: function() {
-    // TODO: Replace the whole body and insert the bootstrap header here with sidebars
+    let componentProps = _.cloneDeep(this.props);
+
+    if (!_.isEmpty(this.state.user)) {
+      _.assign(componentProps, this.state);
+    }
+
     return (
-      <RouteHandler {...this.props} />
+      <RouteHandler {...componentProps} />
     )
+  },
+
+  /*
+    Event handler for 'change' events coming from the StoresStore
+  */
+  _onChange: function() {
+    console.log('Session store updated')
+    this.setState(internals.getSessionFromStore());
   }
 });
+
+export default App;

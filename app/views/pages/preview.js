@@ -12,35 +12,26 @@ import GitHubActions from '../../actions/GitHubActions';
 import _ from 'lodash';
 import Isvg from 'react-inlinesvg';
 
-let internals = {
-  getStateFromStores() {
-    return {
-      github: SessionStore.getGithub(),
-      repos: GithubStore.userRepos(),
-      orgs: GithubStore.userOrgs(),
-      commits: GithubStore.userCommits(),
-      individualCommits: GithubStore.individualCommits(),
-      isLoading: GithubStore.isLoading(),
-    }
-  }
-}
-
 let Preview = React.createClass({
+
+  propTypes: {
+    user: React.PropTypes.object,
+    github: React.PropTypes.object
+  },
+
   mixins: [Navigation],
 
   getInitialState() {
-    return internals.getStateFromStores();
-  },
-
-  propTypes: {
-    user: ReactPropTypes.object,
-    github: ReactPropTypes.object
+    // TODO: Loading state should come from the github store down
+    return {
+      isLoading: false
+    }
   },
 
   githubUserMetaDetails() {
     let whitelistedAttrs = ['github_username', 'github_email', 'github_display_name'];
 
-    let userDetailsList = _.reduce(this.state.github, function(memo, val, key) {
+    let userDetailsList = _.reduce(this.props.github, function(memo, val, key) {
       if (_.contains(whitelistedAttrs, key)) {
         memo.push(<li key={key} className={`meta-li ${key}`}>{val}</li>)
       }
@@ -55,19 +46,14 @@ let Preview = React.createClass({
     )
   },
 
-  componentDidMount() {
-    GithubStore.addChangeListener(this._onChange)
-  },
-
-  componentWillUnmount() {
-    GithubStore.removeChangeListener(this._onChange)
-  },
-
   publishPortfolio() {
     // SHIM: there will be a portfolio store which will represent all the data required for page generation
-    let requiredAttrs = this.state.github;
+    let requiredAttrs = this.props.github;
+    this.setState({
+      isLoading: true
+    })
 
-    GitHubActions.publishPortfolio(requiredAttrs);
+    GitHubActions.publishPortfolio(this.props.github);
   },
 
   render() {
@@ -90,10 +76,6 @@ let Preview = React.createClass({
         </div>
       </div>
     )
-  },
-
-  _onChange() {
-
   }
 })
 
