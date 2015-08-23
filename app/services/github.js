@@ -398,10 +398,11 @@ module.exports.GitHubService = {
   },
 
   publish(github) {
-    console.log('POST TO HAPI PUBLISH');
-    return request.post(APIEndpoints.PUBLISH)
-  },
+    console.log('POST TO HAPI PUBLISH WITH: ', github);
 
+    return request.post(APIEndpoints.PUBLISH)
+                  .send(github)
+  },
   /*
     **** GitHubFetch options ****
   */
